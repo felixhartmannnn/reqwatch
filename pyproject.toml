@@ -1,0 +1,35 @@
+[project]
+name = "reqwatch"
+version = "0.1.0"
+description = "CLI that audits Python requirements-style files for stale, missing, or unused dependencies."
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "ProjectCreationAgent"}
+]
+keywords = ["python", "dependencies", "requirements", "cli", "audit", "lockfiles"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Quality Assurance"
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+reqwatch = "reqwatch:main"
+
+[tool.setuptools]
+py-modules = ["reqwatch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
