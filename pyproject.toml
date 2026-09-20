@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "ProjectCreationAgent"}
+    {name = "Felix Hartmann", email = "292670385+felixhartmannnn@users.noreply.github.com"}
 ]
 keywords = ["python", "dependencies", "requirements", "cli", "audit", "lockfiles"]
 classifiers = [
@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
-    "Topic :: Software Development :: Quality Assurance"
+    "Topic :: Software Development :: Quality Assurance",
 ]
 dependencies = []
 

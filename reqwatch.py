@@ -18,7 +18,7 @@ DEFAULT_OUTPUT = "plain"
 REQUIREMENT_LINE_RE = re.compile(
     r"^\s*[A-Za-z0-9_\.\-]+(?:\[[^\]]+\])?\s*([=<>!~\s].+)?$"
 )
-COMMENT_OR_EMPTY_RE = re.compile(r"^\s*(#.*|$)")
+COMMENT_OR_EMPTY_RE = re.compile(r"^\s*(#.*|)$")
 VCS_URI_RE = re.compile(
     r"^(git\+)?(https?|ssh|git)://|^(git\+)?(git@|hg@|bzr@|svn@)", re.IGNORECASE
 )
@@ -56,6 +56,7 @@ class ProjectContext:
 
 def _now() -> float:
     import time
+
     return time.time()
 
 
@@ -76,7 +77,7 @@ def _extract_name(line: str) -> Optional[str]:
         return None
     if stripped.startswith("-"):
         return None
-    marker = re.search(r"[^A-Za-z0-9_\.\-\[\]]", stripped)
+    marker = re.search(r"[^A-Za-z0-9_\.\-[\]]", stripped)
     if marker:
         name = stripped[: marker.start()]
     else:
@@ -86,7 +87,7 @@ def _extract_name(line: str) -> Optional[str]:
         return None
     if name in {"", ".", ".."}:
         return None
-    if not re.match(r"^[A-Za-z0-9_\.\-\[\]]+$", name):
+    if not re.match(r"^[A-Za-z0-9_\.\-[\]]+$", name):
         return None
     return name
 
@@ -185,7 +186,11 @@ def _is_excluded(name: str, patterns: Sequence[str]) -> bool:
     return False
 
 
-def _detect_unused(requirement: RequirementFile, context: ProjectContext, exclude_patterns: Sequence[str] = ()) -> List[Dependency]:
+def _detect_unused(
+    requirement: RequirementFile,
+    context: ProjectContext,
+    exclude_patterns: Sequence[str] = (),
+) -> List[Dependency]:
     used_names = set()
     for name in context.modules:
         if _is_excluded(name, exclude_patterns):
@@ -218,7 +223,13 @@ def _find_requirement_files(path: str) -> List[str]:
     return files
 
 
-_REQUIREMENT_NAMES = {"requirements", "requirements-dev", "requirements_test", "test-requirements", "dev-requirements"}
+_REQUIREMENT_NAMES = {
+    "requirements",
+    "requirements-dev",
+    "requirements_test",
+    "test-requirements",
+    "dev-requirements",
+}
 
 
 def _is_requirement_like(name: str) -> bool:
@@ -234,12 +245,12 @@ def _is_requirement_like(name: str) -> bool:
     return False
 
 
-def _collect(path: str) -> Tuple[List[RequirementFile], ProjectContext]:
+def _collect(path: str, exclude_patterns: Sequence[str] = ()) -> Tuple[List[RequirementFile], ProjectContext]:
     requirement_files = [_read_requirement_file(p) for p in _find_requirement_files(path)]
     root = path if os.path.isdir(path) else os.path.dirname(path)
     context = _build_project_context(root)
     for req in requirement_files:
-        req.unused = _detect_unused(req, context, exclude_patterns=[])
+        req.unused = _detect_unused(req, context, exclude_patterns=exclude_patterns)
     return requirement_files, context
 
 
@@ -310,7 +321,7 @@ def _parse_args(argv: Optional[Sequence[str]]) -> argparse.Namespace | _HelpArgs
     parser.add_argument("--skip-http", action="store_true", help="placeholder; no HTTP checks in current release")
     parser.add_argument("--timeout", type=int, default=DEFAULT_TIMEOUT, help="request timeout in seconds")
     parser.add_argument("--only", choices=["missing", "stale", "unused", "all"], default="all")
-    parser.add_argument("--exclude", action="append", default=[], help="glob pattern to exclude")
+    parser.add_argument("--exclude", action="append", default=[], help="glob pattern to exclude from unused analysis")
     parser.add_argument("--exit-zero", action="store_true", help="always exit 0")
     try:
         return parser.parse_args(argv)
@@ -328,7 +339,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         print(f"reqwatch: path not found: {args.path}", file=sys.stderr)
         return 2
     try:
-        requirement_files, context = _collect(args.path)
+        requirement_files, context = _collect(args.path, exclude_patterns=args.exclude)
     except Exception as exc:
         print(f"reqwatch: failed to collect requirements: {exc}", file=sys.stderr)
         return 2

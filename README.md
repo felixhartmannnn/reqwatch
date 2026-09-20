@@ -35,7 +35,7 @@ reqwatch requirements.txt
 reqwatch .
 
 # Markdown output for CI artifacts
-reqwatch . --format markdown --output report.md
+reqwatch . --format markdown
 
 # Focus on unused dependencies only
 reqwatch . --only unused
@@ -55,8 +55,11 @@ Exit codes:
 
 ## Project structure
 
-```
+```text
 reqwatch/
+  .github/workflows/ci.yml
+  .gitignore
+  LICENSE
   README.md
   pyproject.toml
   reqwatch.py
