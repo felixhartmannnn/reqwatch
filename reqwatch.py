@@ -6,8 +6,8 @@ import os
 import re
 import sys
 from dataclasses import dataclass, field
-from typing import Iterable, List, Optional, Sequence, Tuple
-from urllib.parse import urlparse
+from typing import List, Optional, Sequence, Tuple
+
 
 DEFAULT_WARN_DAYS = 60
 DEFAULT_STALE_DAYS = 180

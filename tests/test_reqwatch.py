@@ -1,19 +1,12 @@
 import os
-import tempfile
 from pathlib import Path
 
 import reqwatch
 from reqwatch import (
     DEFAULT_STALE_DAYS,
-    Dependency,
-    ProjectContext,
-    RequirementFile,
     _age_days,
     _collect,
-    _detect_unused,
     _extract_name,
-    _find_python_modules,
-    _find_python_packages,
     _is_excluded,
     _is_requirement_like,
     _markdown_report,
